@@ -1,21 +1,23 @@
 from fastapi import FastAPI
-from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 
 app = FastAPI()
 
-# Input structure
+# 🔥 ADD THIS CORS CONFIG
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # allow all origins
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 class UserInput(BaseModel):
     budget: int
     gaming: bool
     coding: bool
 
-# Home route
-@app.get("/")
-def home():
-    return {"message": "Server working"}
-
-# Recommendation route
 @app.post("/recommend")
 def recommend(data: UserInput):
     products = [
@@ -24,10 +26,3 @@ def recommend(data: UserInput):
         {"name": "HP Pavilion", "price": 60000, "use_case": ["coding"]},
     ]
     return products
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
