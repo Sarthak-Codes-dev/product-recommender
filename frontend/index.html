@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Smart Laptop Recommender</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #1f1c2c, #928dab);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.container {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(15px);
+    padding: 40px;
+    border-radius: 20px;
+    width: 400px;
+    color: white;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+input[type="number"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 10px;
+    border: none;
+    outline: none;
+}
+
+.checkbox-group {
+    margin-bottom: 15px;
+}
+
+button {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+    background: #00c6ff;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+button:hover {
+    background: #0072ff;
+}
+
+.result-card {
+    background: rgba(255,255,255,0.2);
+    margin-top: 15px;
+    padding: 15px;
+    border-radius: 12px;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <h1>Smart Laptop Finder</h1>
+
+    <input id="budget" type="number" placeholder="Enter your budget (₹)">
+
+    <div class="checkbox-group">
+        <label><input type="checkbox" id="gaming"> Gaming</label><br>
+        <label><input type="checkbox" id="coding"> Coding</label>
+    </div>
+
+    <button onclick="getRecommendation()">Find Best Laptops</button>
+
+    <div id="results"></div>
+</div>
+
+<script>
+async function getRecommendation() {
+
+    const budget = parseInt(document.getElementById("budget").value);
+    const gaming = document.getElementById("gaming").checked;
+    const coding = document.getElementById("coding").checked;
+
+    const response = await fetch("http://127.0.0.1:8000/recommend", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ budget, gaming, coding })
+    });
+
+    const data = await response.json();
+
+    const resultDiv = document.getElementById("results");
+    resultDiv.innerHTML = "";
+
+    data.forEach(item => {
+        resultDiv.innerHTML += `
+            <div class="result-card">
+                <h3>${item.name}</h3>
+                <p>Price: ₹${item.price}</p>
+                <p>Use Case: ${item.use_case.join(", ")}</p>
+            </div>
+        `;
+    });
+}
+</script>
+
+</body>
+</html>
